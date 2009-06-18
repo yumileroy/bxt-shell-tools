@@ -1,0 +1,39 @@
+#!/bin/bash -eE
+
+site='http://www.bakabt.com'
+
+"${0%/*}/bxt-finger" "${@}" \
+| while read id login; do
+	ratio=`curl -b ~/.bxt-session --silent \
+		"${site}/user/${id}/${login}.html" \
+	| egrep -o "style=\"color:[^>]+>[0-9]+\.[0-9]+</span>.*/smilies/" \
+	| head -n1 \
+	| sed -re 's#^[^>]*>([0-9]+\.[0-9]+)<.*#\1#'`
+	uploaded=`curl -b ~/.bxt-session --silent \
+			"${site}/user/${id}/${login}.html" \
+		| grep -A 1 "Uploaded" \
+		| egrep -o '<td align=\"left">[0-9]+\.[0-9]+\ [^>]+\ -\ \([0-9]+\.[0-9]+\ [^>]+\)</td>' \
+		| head -n1 \
+		| sed -e "s/<[/]\?\(span\|b\|tr\|td\)[^>]*>//g"`
+	downloaded=`curl -b ~/.bxt-session --silent \
+			"${site}/user/${id}/${login}.html" \
+		| grep -A 1 "Downloaded" \
+		| egrep -o '<td align=\"left">[0-9]+\.[0-9]+\ [^>]+\ -\ \([0-9]+\.[0-9]+\ [^>]+\)</td>' \
+		| head -n1 \
+		| sed -e "s/<[/]\?\(span\|b\|tr\|td\)[^>]*>//g"`
+	bonus=`curl -b ~/.bxt-session --silent \
+			"${site}/user/${id}/${login}.html" \
+		| grep -A 1 "Bonus" \
+		| egrep -o '<td>[0-9]+\.[0-9]+\ [^>]+</td>' \
+		| head -n1 \
+		| sed -e "s/<[/]\?\(span\|b\|tr\|td\)[^>]*>//g"`
+	donate=`curl -b ~/.bxt-session --silent \
+			"${site}/user/${id}/${login}.html" \
+		| grep -A 1 "Donate" \
+		| egrep -o '<td>[0-9]+\.[0-9]+\ [^>]+</td>' \
+		| head -n1 \
+		| sed -e "s/<[/]\?\(span\|b\|tr\|td\)[^>]*>//g"`
+	echo -en "${login} has a ratio of ${ratio} and has uploaded ${uploaded} and downloaded ${downloaded} and has redeemed ${bonus} upload from bonus points and ${donate} upload from donations\n"
+done
+
+# EOF

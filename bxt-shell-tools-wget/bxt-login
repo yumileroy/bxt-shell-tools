@@ -1,0 +1,8 @@
+#!/bin/bash -eE
+
+site='http://www.bakabt.com'
+
+wget -q --keep-session-cookies --save-cookies /proc/self/fd/1 \
+	--post-data "username=${1}&password=${2}" "${site}/login.php"
+
+# EOF

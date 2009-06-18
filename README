@@ -1,0 +1,10 @@
+INSTALL
+-------
+1) Choose either one to your liking or preferences
+2) cd in either directory and copy bxt-finger, bxt-login, bxt-ratio to somewhere in your path. etc /usr/bin/ or /usr/local/bin/
+3) Run "bxt-ratio username password" for the first time to let it put the cookie file in ~/.bxt-session
+
+USAGE
+-----
+1) Run "bxt-ratio 0 0 username" to get your statistics. (0 0 is any argument since it justs uses the first two arguments for the 
+login script, have to figure out how to fix it. For now just use an alias.)

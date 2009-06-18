@@ -1,0 +1,18 @@
+#!/bin/bash -eE
+
+site='http://www.bakabt.com'
+
+if [ ! -e ~/.bxt-session ]; then
+	"${0%/*}/bxt-login" "${1}" "${2}" >~/.bxt-session
+fi
+shift; shift
+
+for user in "${@}"; do
+	# <td style="white-space:nowrap;"><a  href="user/141302/Jarudin.html">Jarudin</a>
+	wget -q --load-cookies ~/.bxt-session -O - \
+		"${site}/users.php?class=-&search=${user}" \
+	| grep -o "\"user/[0-9]\+/${user}\.html\"" \
+	| sed -re 's#^"user/([0-9]+)/([^.]+)\.html"$#\1 \2#'
+done
+
+# EOF

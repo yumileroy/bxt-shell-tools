@@ -1,0 +1,7 @@
+#!/bin/bash -eE
+
+site='http://www.bakabt.com'
+
+curl -c ~/.bxt-session --silent -d "username=${1}&password=${2}" "${site}/login.php"
+
+# EOF
