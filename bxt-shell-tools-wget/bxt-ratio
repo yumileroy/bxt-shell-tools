@@ -5,10 +5,15 @@ site='http://www.bakabt.com'
 "${0%/*}/bxt-finger" "${@}" \
 | while read id login; do
 	wget -q --load-cookies ~/.bxt-session -O - "${site}/user/${id}/${login}.html" > /tmp/${login}.html
+	joindate=`cat /tmp/${login}.html \
+		| grep -A 1 "Join date" \
+		| egrep -o '<td>.*</td>' \
+		| sed -e "s/<[/]\?\(div\|img src\|li id\|a href\|span\|b\|tr\|td\|a\|li\|div\)[^>]*>//g" \
+		| awk '{print $1}'`
 	ratio=`cat /tmp/${login}.html \
-	| egrep -o "style=\"color:[^>]+>[0-9]+\.[0-9]+</span>.*/smilies/" \
-	| head -n1 \
-	| sed -re 's#^[^>]*>([0-9]+\.[0-9]+)<.*#\1#'`
+		| egrep -o "style=\"color:[^>]+>[0-9]+\.[0-9]+</span>.*/smilies/" \
+		| head -n1 \
+		| sed -re 's#^[^>]*>([0-9]+\.[0-9]+)<.*#\1#'`
 	uploaded=`cat /tmp/${login}.html \
 		| grep -A 1 "Uploaded" \
 		| egrep -o '<td align=\"left">[0-9]+\.[0-9]+\ [^>]+\ -\ \([0-9]+\.[0-9]+\ [^>]+\)</td>' \
@@ -61,7 +66,7 @@ site='http://www.bakabt.com'
 		| head -n1 \
 		| sed -e "s/<[/]\?\(img src\|li id\|a href\|span\|b\|tr\|td\|a\|li\)[^>]*>//g" \
 		| sed -e 's/^[ \t]*//'`
-	echo -en "User: ${login} Ratio: ${ratio} Uploaded: ${uploaded} Downloaded: ${downloaded} Free Leech: ${freeleech} Bonus Upload: ${bonus} Donate Upload: ${donate} Bonus points: (${bonuspoints}) ${seeding} ${leeching} ${seeded} ${leeched}\n"
+	echo -en "User: ${login} Join Date: ${joindate} Ratio: ${ratio} Uploaded: ${uploaded} Downloaded: ${downloaded} Free Leech: ${freeleech} Bonus Upload: ${bonus} Donate Upload: ${donate} Bonus points: (${bonuspoints}) ${seeding} ${leeching} ${seeded} ${leeched}\n"
 if [ -e /tmp/${login}.html ]; then
 	rm /tmp/${login}.html
 fi
