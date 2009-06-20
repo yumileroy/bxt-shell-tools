@@ -4,37 +4,62 @@ site='http://www.bakabt.com'
 
 "${0%/*}/bxt-finger" "${@}" \
 | while read id login; do
-	ratio=`wget -q --load-cookies ~/.bxt-session -O - \
-		"${site}/user/${id}/${login}.html" \
+	wget -q --load-cookies ~/.bxt-session -O - "${site}/user/${id}/${login}.html" > /tmp/${login}.html
+	ratio=`cat /tmp/${login}.html \
 	| egrep -o "style=\"color:[^>]+>[0-9]+\.[0-9]+</span>.*/smilies/" \
 	| head -n1 \
 	| sed -re 's#^[^>]*>([0-9]+\.[0-9]+)<.*#\1#'`
-	uploaded=`wget -q --load-cookies ~/.bxt-session -O - \
-			"${site}/user/${id}/${login}.html" \
+	uploaded=`cat /tmp/${login}.html \
 		| grep -A 1 "Uploaded" \
 		| egrep -o '<td align=\"left">[0-9]+\.[0-9]+\ [^>]+\ -\ \([0-9]+\.[0-9]+\ [^>]+\)</td>' \
 		| head -n1 \
 		| sed -e "s/<[/]\?\(span\|b\|tr\|td\)[^>]*>//g"`
-	downloaded=`wget -q --load-cookies ~/.bxt-session -O - \
-			"${site}/user/${id}/${login}.html" \
+	downloaded=`cat /tmp/${login}.html \
 		| grep -A 1 "Downloaded" \
 		| egrep -o '<td align=\"left">[0-9]+\.[0-9]+\ [^>]+\ -\ \([0-9]+\.[0-9]+\ [^>]+\)</td>' \
 		| head -n1 \
 		| sed -e "s/<[/]\?\(span\|b\|tr\|td\)[^>]*>//g"`
-	bonus=`wget -q --load-cookies ~/.bxt-session -O - \
-			"${site}/user/${id}/${login}.html" \
+	bonuspoints=`cat /tmp/${login}.html \
+		| grep -A 1 "Bonus Points" \
+		| egrep -o '<td>[0-9]+\ .*</td>' \
+		| head -n1 \
+		| sed -e "s/<[/]\?\(a href\|span\|b\|tr\|td\|a\)[^>]*>//g" \
+		| awk '{sub(/[ \t]+$/, "")};1' \
+		| awk '{print $1}'`
+	bonus=`cat /tmp/${login}.html \
 		| grep -A 1 "Bonus" \
 		| egrep -o '<td>[0-9]+\.[0-9]+\ [^>]+</td>' \
 		| head -n1 \
 		| sed -e "s/<[/]\?\(span\|b\|tr\|td\)[^>]*>//g"`
-	donate=`wget -q --load-cookies ~/.bxt-session -O - \
-			"${site}/user/${id}/${login}.html" \
+	donate=`cat /tmp/${login}.html \
 		| grep -A 1 "Donate" \
 		| egrep -o '<td>[0-9]+\.[0-9]+\ [^>]+</td>' \
 		| head -n1 \
 		| sed -e "s/<[/]\?\(span\|b\|tr\|td\)[^>]*>//g"`
-
-	echo -en "${login} has a ratio of ${ratio} and has uploaded ${uploaded} and downloaded ${downloaded} and has redeemed ${bonus} upload from bonus points and ${donate} upload from donations\n"
+	seeding=`cat /tmp/${login}.html \
+		| grep -A 1 "seeding_tab" \
+		| head -n1 \
+		| sed -e "s/<[/]\?\(img src\|li id\|a href\|span\|b\|tr\|td\|a\|li\)[^>]*>//g" \
+		| sed -e 's/^[ \t]*//'`
+	leeching=`cat /tmp/${login}.html \
+		| grep -A 1 "leeching_tab" \
+		| head -n1 \
+		| sed -e "s/<[/]\?\(img src\|li id\|a href\|span\|b\|tr\|td\|a\|li\)[^>]*>//g" \
+		| sed -e 's/^[ \t]*//'`
+	seeded=`cat /tmp/${login}.html \
+		| grep -A 1 "seeded_tab" \
+		| head -n1 \
+		| sed -e "s/<[/]\?\(img src\|li id\|a href\|span\|b\|tr\|td\|a\|li\)[^>]*>//g" \
+		| sed -e 's/^[ \t]*//'`
+	leeched=`cat /tmp/${login}.html \
+		| grep -A 1 "leeched_tab" \
+		| head -n1 \
+		| sed -e "s/<[/]\?\(img src\|li id\|a href\|span\|b\|tr\|td\|a\|li\)[^>]*>//g" \
+		| sed -e 's/^[ \t]*//'`
+	echo -en "${login} has a ratio of ${ratio} and has uploaded ${uploaded} and downloaded ${downloaded} and has redeemed ${bonus} upload from bonus points and ${donate} upload from donations. Bonus points (${bonuspoints}) ${seeding} ${leeching} ${seeded} ${leeched}\n"
+if [ -e /tmp/${login}.html ]; then
+	rm /tmp/${login}.html
+fi
 done
 
 # EOF
