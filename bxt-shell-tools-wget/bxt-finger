@@ -11,7 +11,7 @@ for user in "${@}"; do
 	# <td style="white-space:nowrap;"><a  href="user/141302/Jarudin.html">Jarudin</a>
 	wget -q --load-cookies ~/.bxt-session -O - \
 		"${site}/users.php?class=-&search=${user}" \
-	| grep -o "\"user/[0-9]\+/${user}\.html\"" \
+	| grep -io "\"user/[0-9]\+/${user}\.html\"" \
 	| sed -re 's#^"user/([0-9]+)/([^.]+)\.html"$#\1 \2#'
 done
 
