@@ -30,7 +30,6 @@ site='http://www.bakabt.com'
 		| egrep -o '<td>[0-9]+\ .*</td>' \
 		| head -n1 \
 		| sed -e "s/<[/]\?\(a href\|span\|b\|tr\|td\|a\)[^>]*>//g" \
-		| awk '{sub(/[ \t]+$/, "")};1' \
 		| awk '{print $1}'`
 	bonus=`cat /tmp/${login}.html \
 		| grep -A 1 "Bonus" \
