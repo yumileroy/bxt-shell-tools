@@ -7,7 +7,7 @@ site='http://www.bakabt.com'
 	curl -b ~/.bxt-session --silent "${site}/user/${id}/${login}.html" > /tmp/${login}.html
 	membertype=`cat /tmp/${login}.html \
 		| egrep -o '<b>'${login}'</b> (.*)<br />' \
-		| sed -e "s/<[/]\?\(div\|img src\|li id\|a href\|span\|b\|tr\|td\|a\|li\|div\)[^>]*>//g" -e 's/[()]//g' -e 's/'${login}'//g' -e 's/Member - //g' -e 's/Admin - //g' -e 's/^[ \t]*//;s/[ \t]*$//'`
+		| sed -e "s/<[a-zA-Z\/][^>]*>//g" -e 's/[()]//g' -e 's/'${login}'//g' -e 's/Member - //g' -e 's/Admin - //g' -e 's/^[ \t]*//;s/[ \t]*$//'`
 	joindate=`cat /tmp/${login}.html \
 		| grep -A 1 "Join date" \
 		| egrep -o '<td>.*</td>' \
