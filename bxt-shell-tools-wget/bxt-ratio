@@ -4,6 +4,7 @@ site='http://www.bakabt.com'
 
 "${0%/*}/bxt-finger" "${@}" \
 | while read id login; do
+	ircbold="0" # This variable sets whether to use IRC bold in the stats script. Set to "1" to enable bold in IRC.
 	wget -q --load-cookies ~/.bxt-session -O - "${site}/user/${id}/${login}.html" > /tmp/${login}.html
 	membertype=`cat /tmp/${login}.html \
 		| egrep -o '<b>'${login}'</b> (.*)<br />' \
@@ -65,7 +66,12 @@ site='http://www.bakabt.com'
 		| grep -A 1 "leeched_tab" \
 		| head -n1 \
 		| sed -e "s/<[a-zA-Z\/][^>]*>//g" -e 's/^[ \t]*//'`
+if [ $ircbold = 1 ]; then
+	echo -en "User: \x02${login}\x0F Member Type: \x02${membertype}\x0F Join Date: \x02${joindate}\x0F Ratio: \x02${ratio}\x0F Uploaded: \x02${uploaded}\x0F Downloaded: \x02${downloaded}\x0F Free Leech: \x02${freeleech}\x0F Bonus Upload: \x02${bonus}\x0F Donate Upload: \x02${donate}\x0F Bonus points: (\x02${bonuspoints}\x0F) \x02${seeding}\x0F \x02${leeching}\x0F \x02${seeded}\x0F \x02${leeched}\x0F\n"
+elif [ $ircbold = 0 ]; then
 	echo -en "User: ${login} Member Type: ${membertype} Join Date: ${joindate} Ratio: ${ratio} Uploaded: ${uploaded} Downloaded: ${downloaded} Free Leech: ${freeleech} Bonus Upload: ${bonus} Donate Upload: ${donate} Bonus points: (${bonuspoints}) ${seeding} ${leeching} ${seeded} ${leeched}\n"
+fi
+
 if [ -e /tmp/${login}.html ]; then
 	rm /tmp/${login}.html
 fi
