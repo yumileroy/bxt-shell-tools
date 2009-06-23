@@ -8,3 +8,7 @@ USAGE
 -----
 1) Run "bxt-ratio 0 0 username" to get your statistics. (0 0 is any argument since it justs uses the first two arguments for the 
 login script, have to figure out how to fix it. For now just use an alias.)
+
+IRC BOLD MODE
+-------------
+This mode outputs the stats in bold in IRC text format. To enable, set ircmode="1" in bxt-ratio.
