@@ -5,7 +5,7 @@ site='http://www.bakabt.com'
 "${0%/*}/bxt-finger" "${@}" \
 | while read id login; do
 	ircbold="0" # This variable sets whether to use IRC bold in the stats script. Set to "1" to enable bold in IRC.
-	wget -q --load-cookies ~/.bxt-session -O - "${site}/user/${id}/${login}.html" > /tmp/${login}.html
+	wget -q --load-cookies ~/.bxt-session -O - "${site}/user/${id}/${login}.html" -O "/tmp/${login}.html"
 	membertype=`cat /tmp/${login}.html \
 		| egrep -o '<b>'${login}'</b> (.*)<br />' \
 		| sed -e "s/<[a-zA-Z\/][^>]*>//g" -e 's/[()]//g' -e 's/'${login}'//g' -e 's/Member - //g' -e 's/Admin - //g' -e 's/^[ \t]*//;s/[ \t]*$//'`
